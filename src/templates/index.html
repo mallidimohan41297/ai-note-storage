@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Student Notes Storage</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="mb-4 text-center text-primary fw-bold">Cloud Notes Storage Dashboard</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm">
+                    <h4 class="card-title mb-3">Upload Academic Resources</h4>
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+                        <div class="input-group">
+                            <input type="file" name="file" class="form-control" required>
+                            <button class="btn btn-primary" type="submit">Upload File</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-4 shadow-sm">
+                    <h4 class="card-title mb-3">Search Library</h4>
+                    <form action="/" method="GET">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search notes by name..." value="{{ query }}">
+                            <button class="btn btn-secondary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-4 text-secondary">Stored Academic Notes</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Document Name</th>
+                                <th>File Size (KB)</th>
+                                <th>Upload Timestamp</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in files %}
+                            <tr>
+                                <td class="fw-semibold text-dark">{{ file.key }}</td>
+                                <td>{{ file.size }} KB</td>
+                                <td>{{ file.last_modified }}</td>
+                                <td class="text-end">
+                                    <a href="/download/{{ file.key }}" class="btn btn-success btn-sm me-2" target="_blank">Download</a>
+                                    <form action="/delete/{{ file.key }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Confirm deletion?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No academic resources found. Try uploading one!</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
